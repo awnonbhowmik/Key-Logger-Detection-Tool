@@ -1,7 +1,7 @@
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import time
-from logging.logger import Logger
+from logutil.logger import Logger
 import config
 
 class KeyloggerFileHandler(FileSystemEventHandler):

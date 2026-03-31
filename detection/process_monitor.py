@@ -1,5 +1,5 @@
 import psutil
-from logging.logger import Logger
+from logutil.logger import Logger
 
 def detect_suspicious_processes():
     logger = Logger()

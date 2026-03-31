@@ -1,164 +1,81 @@
-
 # Keylogger Detection Tool
 
-## Overview
-
-The Keylogger Detection Tool is designed to monitor processes, file system activity, and network connections on a system to detect and alert users to potential keylogging activity. The tool provides real-time monitoring, alerting, and logging capabilities to help protect your system from malicious keyloggers.
+A host-based defensive tool that monitors processes, file system activity, and network connections to detect potential keylogger activity in real time.
 
 ## Features
 
-- **Process Monitoring:** Detects suspicious processes that may be keyloggers based on known signatures and behavior patterns.
-- **File System Monitoring:** Watches for suspicious file creation and modification activities, particularly in sensitive directories.
-- **Network Monitoring:** Monitors network connections for unusual outbound traffic that may indicate a keylogger sending captured data to a remote server.
-- **Alerts:** Sends email and SMS alerts when suspicious activity is detected, allowing for immediate action.
-- **Logging:** Logs all detected events and alerts to a file for further analysis and auditing.
+- **Process Monitoring** — detects suspicious processes by known name signatures
+- **File System Monitoring** — watches configured directories for suspicious file creation (e.g. `.log` files)
+- **Network Monitoring** — flags established outbound connections to untrusted IPs
+- **Alerting** — sends email (SMTP) and SMS (Twilio) notifications on detection
+- **Logging** — writes all events and alerts to a timestamped log file
+
+## Requirements
+
+- Python 3.13+
+- pip
 
 ## Installation
 
-### Prerequisites
+```bash
+git clone https://github.com/yourusername/Key-Logger-Detection-Tool.git
+cd Key-Logger-Detection-Tool
 
-- Python 3.8 or higher
-- pip (Python package installer)
+python3.13 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
 
-### Steps
-
-1. **Clone the repository:**
-
-   \`\`\`bash
-   git clone https://github.com/yourusername/keylogger_detection_tool.git
-   cd keylogger_detection_tool
-   \`\`\`
-
-2. **Create and activate a virtual environment:**
-
-   \`\`\`bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scriptsctivate
-   \`\`\`
-
-3. **Install dependencies:**
-
-   \`\`\`bash
-   pip install -r requirements.txt
-   \`\`\`
-
-## Usage
-
-The Keylogger Detection Tool can be run from the command line with various options for process scanning, file monitoring, and network monitoring.
-
-### Running the Tool
-
-To run the tool with all monitoring features enabled:
-
-\`\`\`bash
-python run_tool.py --scan-processes --monitor-files --monitor-network
-\`\`\`
-
-### Command-Line Options
-
-- \`--scan-processes\`: Scan the system for suspicious processes.
-- \`--monitor-files\`: Monitor specified directories for suspicious file activity.
-- \`--monitor-network\`: Monitor network connections for suspicious outbound activity.
-
-### Monitoring Logs and Alerts
-
-- Logs are stored in \`keylogger_detection.log\` in the root directory of the project.
-- Alerts are sent via email and SMS as configured in \`config.py\`.
+pip install -r requirements.txt
+```
 
 ## Configuration
 
-The tool's behavior can be customized through the \`config.py\` file.
+All settings are read from environment variables. Copy the example file and fill in your values:
 
-### Directories to Monitor
+```bash
+cp .env.example .env
+```
 
-Specify which directories should be monitored for suspicious file activity:
+| Variable | Description |
+|---|---|
+| `MONITOR_DIRECTORIES` | Colon-separated paths to watch (e.g. `/home:/tmp`) |
+| `TRUSTED_IPS` | Comma-separated IPs that won't trigger network alerts |
+| `LOG_FILE` | Path for the detection log (default: `keylogger_detection.log`) |
+| `SMTP_SERVER` / `SMTP_PORT` | SMTP server for email alerts |
+| `FROM_EMAIL` / `EMAIL_PASSWORD` / `TO_EMAIL` | Email credentials |
+| `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` | Twilio credentials |
+| `TWILIO_FROM_NUMBER` / `TWILIO_TO_NUMBER` | SMS numbers |
 
-\`\`\`python
-DIRECTORIES_TO_MONITOR = ["/path/to/monitor"]
-\`\`\`
+## Usage
 
-### Trusted IP Addresses
+```bash
+# Scan running processes once
+python run_tool.py --scan-processes
 
-Define trusted IP addresses to avoid false positives in network monitoring:
+# Watch configured directories for suspicious file activity
+python run_tool.py --monitor-files
 
-\`\`\`python
-TRUSTED_IPS = ['192.168.1.1', '127.0.0.1']
-\`\`\`
+# Check network connections against trusted IPs
+python run_tool.py --monitor-network
 
-### Email Alert Settings
+# Run all monitors
+python run_tool.py --scan-processes --monitor-files --monitor-network
+```
 
-Configure the SMTP settings for sending email alerts:
-
-\`\`\`python
-EMAIL_SETTINGS = {
-    "smtp_server": "smtp.example.com",
-    "port": 587,
-    "from_email": "your_email@example.com",
-    "password": "your_password",
-    "to_email": "admin@example.com"
-}
-\`\`\`
-
-### Twilio SMS Alert Settings
-
-Configure Twilio settings for sending SMS alerts:
-
-\`\`\`python
-TWILIO_SETTINGS = {
-    "account_sid": "your_account_sid",
-    "auth_token": "your_auth_token",
-    "from_number": "your_twilio_number",
-    "to_number": "+1234567890"
-}
-\`\`\`
-
-## Deployment
-
-### Docker Deployment
-
-The tool can be containerized using Docker for easy deployment.
-
-1. **Build the Docker image:**
-
-   \`\`\`bash
-   docker build -t keylogger_detection_tool .
-   \`\`\`
-
-2. **Run the Docker container:**
-
-   \`\`\`bash
-   docker run -p 5000:5000 keylogger_detection_tool
-   \`\`\`
-
-### Executable Packaging
-
-To create a standalone executable, you can use \`pyinstaller\`:
-
-\`\`\`bash
-pip install pyinstaller
-pyinstaller --onefile run_tool.py
-\`\`\`
-
-The executable will be created in the \`dist\` directory.
+Logs are written to the path set in `LOG_FILE` (default: `keylogger_detection.log`).
 
 ## Testing
 
-The tool includes unit tests to verify its functionality.
+```bash
+python -m pytest tests/ -v
+```
 
-### Running Unit Tests
+## Docker
 
-To run the unit tests:
-
-\`\`\`bash
-python -m unittest discover -s tests
-\`\`\`
-
-This command will discover and run all tests in the \`tests\` directory.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a pull request or open an issue on GitHub if you have any suggestions or find any bugs.
+```bash
+docker build -t keylogger-detection-tool .
+docker run --env-file .env keylogger-detection-tool
+```
 
 ## License
 
-This project is licensed under the MIT License. See the \`LICENSE\` file for more details.
+MIT — see `LICENSE` for details.

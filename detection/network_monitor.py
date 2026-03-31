@@ -1,5 +1,5 @@
 import psutil
-from logging.logger import Logger
+from logutil.logger import Logger
 import config
 
 def monitor_network_activity():

@@ -1,25 +1,31 @@
 import unittest
-import os
-from logging.logger import Logger
+import logging
+import io
+from logutil.logger import Logger, _logger
+
 
 class TestLogger(unittest.TestCase):
     def setUp(self):
-        self.logger = Logger()
-        self.log_file = "keylogger_detection.log"
-        if os.path.exists(self.log_file):
-            os.remove(self.log_file)
+        # Capture log output in memory instead of relying on the file on disk.
+        self._stream = io.StringIO()
+        self._handler = logging.StreamHandler(self._stream)
+        self._handler.setLevel(logging.DEBUG)
+        _logger.addHandler(self._handler)
+
+    def tearDown(self):
+        _logger.removeHandler(self._handler)
+        self._handler.close()
 
     def test_log_alert(self):
-        self.logger.log_alert("Test Alert")
-        with open(self.log_file, "r") as f:
-            logs = f.read()
-            self.assertIn("Test Alert", logs)
+        Logger().log_alert("Test Alert")
+        self._stream.seek(0)
+        self.assertIn("Test Alert", self._stream.read())
 
     def test_log_event(self):
-        self.logger.log_event("Test Event")
-        with open(self.log_file, "r") as f:
-            logs = f.read()
-            self.assertIn("Test Event", logs)
+        Logger().log_event("Test Event")
+        self._stream.seek(0)
+        self.assertIn("Test Event", self._stream.read())
+
 
 if __name__ == "__main__":
     unittest.main()

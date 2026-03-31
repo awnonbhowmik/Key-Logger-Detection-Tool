@@ -1,4 +1,4 @@
-psutil
-watchdog
-smtplib
-twilio
+psutil==7.2.2
+watchdog==6.0.0
+twilio==9.10.4
+python-dotenv==1.2.2

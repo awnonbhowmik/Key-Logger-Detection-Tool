@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "keylogger-detection-tool"
+version = "0.1.0"
+description = "A host-based defensive tool to detect keylogger activity via process, file-system, and network monitoring."
+requires-python = ">=3.13"
+dependencies = [
+    "psutil==7.2.2",
+    "watchdog==6.0.0",
+    "twilio==9.10.4",
+    "python-dotenv==1.2.2",
+]
+
+[project.scripts]
+kld = "cli.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["detection*", "alerts*", "logutil*", "cli*"]
