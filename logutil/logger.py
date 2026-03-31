@@ -36,3 +36,6 @@ class Logger:
 
     def log_event(self, message):
         self._log.info(message)
+
+    def log_error(self, message):
+        self._log.error(message)
